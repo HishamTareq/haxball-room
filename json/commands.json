@@ -3,7 +3,7 @@
     "name": "help",
     "syntax": "help",
     "id": 1,
-    "active": false,
+    "active": true,
     "admin": false,
     "staff": false,
     "display": false,
