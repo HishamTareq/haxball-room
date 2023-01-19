@@ -108,5 +108,15 @@
     "staff": true,
     "display": false,
     "isGlobally": false
+  },
+  {
+    "name": "discord",
+    "syntax": "discord",
+    "id": 12,
+    "active": false,
+    "admin": false,
+    "staff": false,
+    "display": false,
+    "isGlobally": false
   }
 ]
