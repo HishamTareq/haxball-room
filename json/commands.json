@@ -1,6 +1,112 @@
 [
   {
     "name": "help",
-    "id": 1
+    "syntax": "/help/",
+    "id": 1,
+    "active": false,
+    "admin": false,
+    "staff": false,
+    "display": true,
+    "isGlobally": true
+  },
+  {
+    "name": "admin",
+    "syntax": "/admin/",
+    "id": 2,
+    "active": false,
+    "admin": false,
+    "staff": false,
+    "display": false,
+    "isGlobally": true
+  },
+  {
+    "name": "waive",
+    "syntax": "/waive/",
+    "id": 3,
+    "active": false,
+    "admin": false,
+    "staff": false,
+    "display": false,
+    "isGlobally": true
+  },
+  {
+    "name": "clearbans",
+    "syntax": "/clearbans/",
+    "id": 4,
+    "active": false,
+    "admin": true,
+    "staff": false,
+    "display": false,
+    "isGlobally": true
+  },
+  {
+    "name": "re",
+    "syntax": "/re/",
+    "id": 5,
+    "active": false,
+    "admin": true,
+    "staff": false,
+    "display": true,
+    "isGlobally": true
+  },
+  {
+    "name": "bb",
+    "syntax": "/bb/",
+    "id": 6,
+    "active": false,
+    "admin": false,
+    "staff": false,
+    "display": false,
+    "isGlobally": true
+  },
+  {
+    "name": "afk",
+    "syntax": "/afk/",
+    "id": 7,
+    "active": false,
+    "admin": false,
+    "staff": false,
+    "display": false,
+    "isGlobally": true
+  },
+  {
+    "name": "afks",
+    "syntax": "/afks/",
+    "id": 8,
+    "active": false,
+    "admin": false,
+    "staff": false,
+    "display": false,
+    "isGlobally": true
+  },
+  {
+    "name": "mute",
+    "syntax": "/mute #\\d+/",
+    "id": 9,
+    "active": false,
+    "admin": false,
+    "staff": true,
+    "display": false,
+    "isGlobally": false
+  },
+  {
+    "name": "unmute",
+    "syntax": "/unmute #\\d+/",
+    "id": 10,
+    "active": false,
+    "admin": false,
+    "staff": true,
+    "display": false,
+    "isGlobally": false
+  },
+  {
+    "name": "move",
+    "syntax": "/move #\\d+/",
+    "id": 11,
+    "active": false,
+    "admin": false,
+    "staff": true,
+    "display": false,
+    "isGlobally": false
   }
 ]
