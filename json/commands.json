@@ -6,7 +6,7 @@
     "active": false,
     "admin": false,
     "staff": false,
-    "display": true,
+    "display": false,
     "isGlobally": true
   },
   {
