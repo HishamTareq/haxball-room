@@ -118,5 +118,35 @@
     "staff": false,
     "display": false,
     "isGlobally": false
+  },
+  {
+    "name": "login",
+    "syntax": "login",
+    "id": 13,
+    "active": false,
+    "admin": false,
+    "staff": false,
+    "display": false,
+    "isGlobally": false
+  },
+  {
+    "name": "register",
+    "syntax": "register",
+    "id": 14,
+    "active": false,
+    "admin": false,
+    "staff": false,
+    "display": false,
+    "isGlobally": false
+  },
+  {
+    "name": "map",
+    "syntax": "map",
+    "id": 15,
+    "active": false,
+    "admin": false,
+    "staff": false,
+    "display": false,
+    "isGlobally": false
   }
 ]
