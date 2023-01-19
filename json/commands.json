@@ -1,7 +1,7 @@
 [
   {
     "name": "help",
-    "syntax": "/help/",
+    "syntax": "help",
     "id": 1,
     "active": false,
     "admin": false,
@@ -11,7 +11,7 @@
   },
   {
     "name": "admin",
-    "syntax": "/admin/",
+    "syntax": "admin",
     "id": 2,
     "active": false,
     "admin": false,
@@ -21,7 +21,7 @@
   },
   {
     "name": "waive",
-    "syntax": "/waive/",
+    "syntax": "waive",
     "id": 3,
     "active": false,
     "admin": false,
@@ -31,7 +31,7 @@
   },
   {
     "name": "clearbans",
-    "syntax": "/clearbans/",
+    "syntax": "clearbans",
     "id": 4,
     "active": false,
     "admin": true,
@@ -41,7 +41,7 @@
   },
   {
     "name": "re",
-    "syntax": "/re/",
+    "syntax": "re",
     "id": 5,
     "active": false,
     "admin": true,
@@ -51,7 +51,7 @@
   },
   {
     "name": "bb",
-    "syntax": "/bb/",
+    "syntax": "bb",
     "id": 6,
     "active": false,
     "admin": false,
@@ -61,7 +61,7 @@
   },
   {
     "name": "afk",
-    "syntax": "/afk/",
+    "syntax": "afk",
     "id": 7,
     "active": false,
     "admin": false,
@@ -71,7 +71,7 @@
   },
   {
     "name": "afks",
-    "syntax": "/afks/",
+    "syntax": "afks",
     "id": 8,
     "active": false,
     "admin": false,
@@ -81,7 +81,7 @@
   },
   {
     "name": "mute",
-    "syntax": "/mute #\\d+/",
+    "syntax": "mute #\\d+",
     "id": 9,
     "active": false,
     "admin": false,
@@ -91,7 +91,7 @@
   },
   {
     "name": "unmute",
-    "syntax": "/unmute #\\d+/",
+    "syntax": "unmute #\\d+",
     "id": 10,
     "active": false,
     "admin": false,
@@ -101,7 +101,7 @@
   },
   {
     "name": "move",
-    "syntax": "/move #\\d+/",
+    "syntax": "move #\\d+",
     "id": 11,
     "active": false,
     "admin": false,
