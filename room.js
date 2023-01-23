@@ -38,12 +38,6 @@ Object.defineProperty(Object.prototype, 'swap', {
   }
 });
 
-/**
- * Check the player if he is blacklisted or if he is trying to join twice from the same network,
- * the player will be kicked if the first or the second condition is met
- * @param {PlayerObject} player It should contain the `id` and `conn`.
- */
-
 function check(player) {
   var { [player.conn]: conn } = connections.swap();
   var blacklist = JSON.parse(window.localStorage.getItem('blacklist'));
