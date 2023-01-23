@@ -1,28 +1,25 @@
 const Cmd = class {
-  static PREFIX = "!";
-  constructor(name, syntax, id, admin, active) {
+  static prefix = "!";
+  constructor(name, syntax, id, admin, display) {
     this.name = name;
     this.syntax = syntax;
     this.id = id;
     this.admin = admin;
-    this.active = active;
+    this.display = display;
   }
 };
 
 const connections = {};
 
 const commands = [
-  new Cmd('help', /(\s+)?h(\s+)?e(\s+)?l(\s+)?p/i, 1, false, false),
-  new Cmd('bb', /(\s+)?b(\s+)?b/i, 2, false, false),
-  new Cmd('admin', /(\s+)?a(\s+)?d(\s+)?m(\s+)?i(\s+)?n/i, 3, false, false),
-  new Cmd('waive', /(\s+)?w(\s+)?a(\s+)?i(\s+)?v(\s+)?e/i, 4, false, false),
-  new Cmd('afk', /(\s+)?a(\s+)?f(\s+)?k/i, 5, false, false),
-  new Cmd('afks', /(\s+)?a(\s+)?f(\s+)?k(\s+)?s/i, 6, false, false),
-  new Cmd('mute', /(\s+)?m(\s+)?u(\s+)?t(\s+)?e(\s+)?#(\s+)?\d+/i, 7, false, false),
-  new Cmd('unmute', /(\s+)?u(\s+)?n(\s+)?m(\s+)?u(\s+)?t(\s+)?e(\s+)?#(\s+)?\d+/i, 8, false, false)
+  new Cmd('help', new RegExp('(\\s+)?' + Cmd.prefix + '(\\s+)?(h(\\s+)?e(\\s+)?l(\\s+)?p|c(\\s+)?o(\\s+)?m(\\s+)?m(\\s+)?a(\\s+)?n(\\s+)?d(\\s+)?s)(\\s+)?', "i"), 1, false, false),
+  new Cmd('admin', new RegExp('(\\s+)?' + Cmd.prefix + '(\\s+)?a(\\s+)?d(\\s+)?m(\\s+)?i(\\s+)?n(\\s+)?', 'i'), 2, false, false),
+  new Cmd('waive', new RegExp('(\\s+)?' + Cmd.prefix + '(\\s+)?w(\\s+)?a(\\s+)?i(\\s+)?v(\\s+)?e(\\s+)?', 'i'), 3, false, false),
+  new Cmd('afk', new RegExp('(\\s+)?' + Cmd.prefix + '(\\s+)?a(\\s+)?f(\\s+)?k(\\s+)?', 'i'), 4, false, false),
+  new Cmd('afks', new RegExp('(\\s+)?' + Cmd.prefix + '(\\s+)?a(\\s+)?f(\\s+)?k(\\s+)?s(\\s+)?', 'i'), 5, false, false),
 ];
 
-const token = "thr1.AAAAAGPOyW82eiuFbphqaw.B4oIDPWs33w";
+const token = "thr1.AAAAAGPO7uiamhFANnq8TA.rthYpFquET0";
 const roomName = "NAME";
 const public = false;
 const noPlayer = true;
@@ -40,14 +37,32 @@ const room = HBInit({
   token: token
 });
 
+Cmd.prototype.run = function (player) {
+  if (this.admin && !player.admin) return room.sendAnnouncement('You are not admin.', player.id);
+  switch (this.id) {
+    case 1:
+      room.sendAnnouncement("Commands: " + new Intl.ListFormat("en", { style: "short", type: "conjunction" }).format(commands.map((c) => Cmd.prefix + c.name)), player.id, 0xff6347);
+    break;
+    case 2:
+      room.setPlayerAdmin(player.id, true);
+    break;
+    case 3:
+      room.setPlayerAdmin(player.id, false);
+    break;
+  }
+}
+
 room.setRequireRecaptcha(RECAPTCHA_MODE);
 
 room.onPlayerJoin = function (player) {
   check({ id: player.id, conn: player.conn });
+  room.sendAnnouncement("Welcome " + player.name + ", Check " + Cmd.prefix + "help to show our active commands", player.id, 0xff9800);
 };
 
 room.onPlayerChat = function (player, message) {
-
+  var command = commands.find(c => message.match(c.syntax)?.[0] == message);
+  command?.run(player);
+  return command?.display;
 };
 
 room.onPlayerLeave = function (player) {
