@@ -1,16 +1,16 @@
-const connections = {};
+var connections = {};
 
-const token = "thr1.AAAAAGPO7uiamhFANnq8TA.rthYpFquET0";
-const roomName = "NAME";
-const public = false;
-const noPlayer = true;
-const maxPlayers = 5;
+var token = "thr1.AAAAAGPO7uiamhFANnq8TA.rthYpFquET0";
+var roomName = "NAME";
+var public = false;
+var noPlayer = true;
+var maxPlayers = 5;
 
-let CONNECTION_MODE = true;
-let RECAPTCHA_MODE = false;
-let BLACKLIST_MODE = true;
+var CONNECTION_MODE = true;
+var RECAPTCHA_MODE = false;
+var BLACKLIST_MODE = true;
 
-const room = HBInit({
+var room = HBInit({
   maxPlayers: maxPlayers,
   roomName: roomName,
   noPlayer: noPlayer,
