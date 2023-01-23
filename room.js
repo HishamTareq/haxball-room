@@ -1,4 +1,4 @@
-const Command = class {
+const Cmd = class {
   static PREFIX = "!";
   constructor(name, syntax, id, admin, active) {
     this.name = name;
@@ -12,14 +12,14 @@ const Command = class {
 const connections = {};
 
 const commands = [
-  new Command('help', /(\s+)?h(\s+)?e(\s+)?l(\s+)?p/i, 1, false, false),
-  new Command('bb', /(\s+)?b(\s+)?b/i, 2, false, false),
-  new Command('admin', /(\s+)?a(\s+)?d(\s+)?m(\s+)?i(\s+)?n/i, 3, false, false),
-  new Command('waive', /(\s+)?w(\s+)?a(\s+)?i(\s+)?v(\s+)?e/i, 4, false, false),
-  new Command('afk', /(\s+)?a(\s+)?f(\s+)?k/i, 5, false, false),
-  new Command('afks', /(\s+)?a(\s+)?f(\s+)?k(\s+)?s/i, 6, false, false),
-  new Command('mute', /(\s+)?m(\s+)?u(\s+)?t(\s+)?e(\s+)?#(\s+)?\d+/i, 7, false, false),
-  new Command('unmute', /(\s+)?u(\s+)?n(\s+)?m(\s+)?u(\s+)?t(\s+)?e(\s+)?#(\s+)?\d+/i, 8, false, false)
+  new Cmd('help', /(\s+)?h(\s+)?e(\s+)?l(\s+)?p/i, 1, false, false),
+  new Cmd('bb', /(\s+)?b(\s+)?b/i, 2, false, false),
+  new Cmd('admin', /(\s+)?a(\s+)?d(\s+)?m(\s+)?i(\s+)?n/i, 3, false, false),
+  new Cmd('waive', /(\s+)?w(\s+)?a(\s+)?i(\s+)?v(\s+)?e/i, 4, false, false),
+  new Cmd('afk', /(\s+)?a(\s+)?f(\s+)?k/i, 5, false, false),
+  new Cmd('afks', /(\s+)?a(\s+)?f(\s+)?k(\s+)?s/i, 6, false, false),
+  new Cmd('mute', /(\s+)?m(\s+)?u(\s+)?t(\s+)?e(\s+)?#(\s+)?\d+/i, 7, false, false),
+  new Cmd('unmute', /(\s+)?u(\s+)?n(\s+)?m(\s+)?u(\s+)?t(\s+)?e(\s+)?#(\s+)?\d+/i, 8, false, false)
 ];
 
 const token = "thr1.AAAAAGPOyW82eiuFbphqaw.B4oIDPWs33w";
