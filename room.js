@@ -1,4 +1,4 @@
-class Command {
+const Command = class {
   static PREFIX = "!";
   constructor(name, syntax, id, admin, active) {
     this.name = name;
@@ -47,7 +47,7 @@ room.onPlayerJoin = function (player) {
 };
 
 room.onPlayerChat = function (player, message) {
-  
+
 };
 
 room.onPlayerLeave = function (player) {
