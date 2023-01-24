@@ -1,7 +1,15 @@
 /**
- * An object that contains the current players `id` as a `key` and its `value` is `conn`
+ * Enable and disable connection mode.
  */
-var connections = {};
+var CONNECTION_MODE = true;
+/**
+ * Enable and disable Recaptcha mode.
+ */
+var RECAPTCHA_MODE = false;
+/**
+ * Enable and disable blacklist mode.
+ */
+var BLACKLIST_MODE = true;
 
 var token = "thr1.AAAAAGPQNu4N_uq_S-RPiw.9oOzTcyHifA";
 var roomName = "NAME";
@@ -9,17 +17,20 @@ var public = false;
 var noPlayer = true;
 var maxPlayers = 12;
 /**
- * Enable and disable connection mode
+ * An object that contains the current players `id` as a `key` and its `value` is `conn`.
  */
-var CONNECTION_MODE = true;
-/**
- * Enable and disable Recaptcha mode
- */
-var RECAPTCHA_MODE = false;
-/**
- * Enable and disable blacklist mode
- */
-var BLACKLIST_MODE = true;
+var connections = {};
+
+var commands = {
+  public: [
+    {
+      name: "help",
+      id: 1,
+      syntax: /(help|commands)/i,
+      display: false,
+    }
+  ]
+}
 
 var room = HBInit({
   maxPlayers: maxPlayers,
@@ -35,12 +46,17 @@ room.onPlayerJoin = function (player) {
   check({ id: player.id, conn: player.conn });
 };
 
+
 room.onPlayerLeave = function (player) {
   delete connections[player.id];
 };
 
 room.onPlayerChat = function (player, message) {
-  
+  var message = message.trim();
+  if (checkCommandSyntax(message)) {
+    let command = getCommandBySyntax(message);
+    if (!command) return false;
+  }
 }
 
 Object.defineProperty(connections, 'swap', {
@@ -51,6 +67,10 @@ Object.defineProperty(connections, 'swap', {
     }
     return a;
   }
+});
+
+Object.defineProperty(commands, 'char', {
+  value: "!",
 });
 
 /**
@@ -65,4 +85,25 @@ function check(player) {
   if (BLACKLIST_MODE && blacklist.find(p => p.conn == player.conn)) return room.kickPlayer(player.id, 'BLACKLISTED');
   if (CONNECTION_MODE && conn) return room.kickPlayer(player.id, 'It is not allowed to join more than one player from the same network');
   connections[player.id] = player.conn;
+};
+
+/**
+ * Check if the command is written in the default form.
+ * @param {string} message
+ * @returns `true` if the command is written in the default form, otherwise `false`.
+ */
+
+function checkCommandSyntax(message) {
+  var char = commands.char;
+  return message.startsWith(char) && message.length > char.length;
+};
+
+/**
+ * @param {string} message
+ * @returns Command properties.
+ */
+
+function getCommandBySyntax(message) {
+  var message = message.slice(1);
+  return [...commands.public].find(c => message.match(c.syntax)?.[0] == message);
 };
