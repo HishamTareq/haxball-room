@@ -1,10 +1,10 @@
 var connections = {};
 
-var token = "thr1.AAAAAGPO7uiamhFANnq8TA.rthYpFquET0";
+var token = "thr1.AAAAAGPQD8KRxIrCHbJWSg.uuI6tluKNLk";
 var roomName = "NAME";
 var public = false;
 var noPlayer = true;
-var maxPlayers = 5;
+var maxPlayers = 12;
 
 var CONNECTION_MODE = true;
 var RECAPTCHA_MODE = false;
@@ -28,7 +28,7 @@ room.onPlayerLeave = function (player) {
   delete connections[player.id];
 };
 
-Object.defineProperty(Object.prototype, 'swap', {
+Object.defineProperty(connections, 'swap', {
   value: function () {
     var a = {};
     for (let key in this) {
@@ -37,6 +37,12 @@ Object.defineProperty(Object.prototype, 'swap', {
     return a;
   }
 });
+
+/**
+ * Check if the player is blacklisted or try to join again from the same network,
+ * will be kicked out if one of the above two conditions is met.
+ * @param {PlayerObject} player
+ */
 
 function check(player) {
   var { [player.conn]: conn } = connections.swap();
