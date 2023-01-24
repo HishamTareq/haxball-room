@@ -1,30 +1,30 @@
 /**
  * Enable and disable connection mode.
  */
-var CONNECTION_MODE = true;
+let CONNECTION_MODE = true;
 /**
  * Enable and disable Recaptcha mode.
  */
-var RECAPTCHA_MODE = false;
+let RECAPTCHA_MODE = false;
 /**
  * Enable and disable blacklist mode.
  */
-var BLACKLIST_MODE = true;
+let BLACKLIST_MODE = true;
 
-var mainColor = 0xFF9800;
-var tipColor = 0xFF7043;
+let mainColor = 0xFF9800;
+let tipColor = 0xFF7043;
 
-var token = "thr1.AAAAAGPQU8a1kggh_SZRJw.kWb6Q-s8NLQ";
-var roomName = "NAME";
-var public = false;
-var noPlayer = true;
-var maxPlayers = 12;
+let token = "thr1.AAAAAGPQU8a1kggh_SZRJw.kWb6Q-s8NLQ";
+let roomName = "NAME";
+let public = false;
+let noPlayer = true;
+let maxPlayers = 12;
 /**
  * An object that contains the current players `id` as a `key` and its `value` is `conn`.
  */
-var connections = {};
+const connections = {};
 
-var commands = {
+const commands = {
   public: [
     {
       name: "help",
@@ -47,7 +47,7 @@ var commands = {
   ]
 }
 
-var room = HBInit({
+const room = HBInit({
   maxPlayers: maxPlayers,
   roomName: roomName,
   noPlayer: noPlayer,
