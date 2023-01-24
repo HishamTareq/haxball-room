@@ -28,6 +28,12 @@ var commands = {
       id: 1,
       syntax: /(help|commands)/i,
       display: false,
+    },
+    {
+      name: "bb",
+      id: 2,
+      syntax: /(bb)/i,
+      display: false,
     }
   ]
 }
@@ -56,6 +62,8 @@ room.onPlayerChat = function (player, message) {
   if (checkCommandSyntax(message)) {
     let command = getCommandBySyntax(message);
     if (!command) return false;
+    run(command, player);
+    return command.display;
   }
 }
 
@@ -106,4 +114,19 @@ function checkCommandSyntax(message) {
 function getCommandBySyntax(message) {
   var message = message.slice(1);
   return [...commands.public].find(c => message.match(c.syntax)?.[0] == message);
+};
+
+/**
+ * Once the command object is passed in, its function will be executed.
+ * @param {object} command
+ * @param {PlayerObject} player
+ */
+
+function run(command, player = { id: 0 }) {
+  switch (command.id) {
+    case 1:
+      const formatter = new Intl.ListFormat('en', { style: 'short', type: 'conjunction' });
+      room.sendAnnouncement("Commands: " + formatter.format(commands.public.map((c) => commands.char + c.name), player.id));
+    break;
+  }
 };
