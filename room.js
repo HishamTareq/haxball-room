@@ -12,7 +12,9 @@ let RECAPTCHA_MODE = false;
 let BLACKLIST_MODE = true;
 
 let mainColor = 0xFF9800;
+let wrongColor = 0xE53935;
 let tipColor = 0xFF7043;
+let dColor = 0xA1887F;
 
 let token = "thr1.AAAAAGPQU8a1kggh_SZRJw.kWb6Q-s8NLQ";
 let roomName = "NAME";
@@ -30,18 +32,28 @@ const commands = {
       name: "help",
       id: 1,
       syntax: /(help|commands)/i,
+      admin: false,
       display: false,
     },
     {
       name: "bb",
       id: 2,
       syntax: /(bb|leave)/i,
+      admin: false,
       display: false,
     },
     {
       name: "waive",
       id: 3,
       syntax: /(waive|resign)/i,
+      admin: false,
+      display: false,
+    },
+    {
+      name: "clearbans",
+      id: 4,
+      syntax: /(clearbans)/i,
+      admin: true,
       display: false,
     },
   ]
@@ -71,6 +83,10 @@ room.onPlayerChat = function (player, message) {
   if (checkCommandSyntax(message)) {
     let command = getCommandBySyntax(message);
     if (!command) return false;
+    if (command.admin && !player.admin) {
+      room.sendAnnouncement("You are not admin", player.id, wrongColor);
+      return false;
+    }
     run(command, player);
     return command.display;
   }
@@ -143,6 +159,9 @@ function run(command, player = { id: 0 }) {
     break;
     case 3:
       room.setPlayerAdmin(player.id, false);
+    break;
+    case 4:
+      room.sendAnnouncement("Banlist has been cleared by @" + player.name, null, dColor);
     break;
   }
 };
