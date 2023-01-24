@@ -72,6 +72,7 @@ room.setRequireRecaptcha(RECAPTCHA_MODE);
 room.onPlayerJoin = function (player) {
   check({ id: player.id, conn: player.conn });
   room.sendAnnouncement("Welcome " + player.name + ", Check " + commands.char + "help to show public commands", player.id, tipColor);
+  room.sendAnnouncement("Banlist is emptied every 10 minutes, players who abuse permissions will be blacklisted 📌\nbecause there are no moderators in the room at the moment, so be careful!", player.id, 0x757575, "small");
 };
 
 room.onPlayerLeave = function (player) {
