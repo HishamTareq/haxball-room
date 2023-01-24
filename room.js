@@ -11,7 +11,10 @@ var RECAPTCHA_MODE = false;
  */
 var BLACKLIST_MODE = true;
 
-var token = "thr1.AAAAAGPQNu4N_uq_S-RPiw.9oOzTcyHifA";
+var mainColor = 0xFF9800;
+var tipColor = 0xFF7043;
+
+var token = "thr1.AAAAAGPQU8a1kggh_SZRJw.kWb6Q-s8NLQ";
 var roomName = "NAME";
 var public = false;
 var noPlayer = true;
@@ -32,9 +35,15 @@ var commands = {
     {
       name: "bb",
       id: 2,
-      syntax: /(bb)/i,
+      syntax: /(bb|leave)/i,
       display: false,
-    }
+    },
+    {
+      name: "waive",
+      id: 3,
+      syntax: /(waive|resign)/i,
+      display: false,
+    },
   ]
 }
 
@@ -50,8 +59,8 @@ room.setRequireRecaptcha(RECAPTCHA_MODE);
 
 room.onPlayerJoin = function (player) {
   check({ id: player.id, conn: player.conn });
+  room.sendAnnouncement("Welcome " + player.name + ", Check " + commands.char + "help to show public commands", player.id, tipColor);
 };
-
 
 room.onPlayerLeave = function (player) {
   delete connections[player.id];
@@ -79,12 +88,13 @@ Object.defineProperty(connections, 'swap', {
 
 Object.defineProperty(commands, 'char', {
   value: "!",
+  writable: true,
 });
 
 /**
  * Check if the player is blacklisted or try to join again from the same network,
  * will be kicked if one of the above two conditions is met.
- * @param {PlayerObject} player
+ * @param { PlayerObject } player
  */
 
 function check(player) {
@@ -97,7 +107,7 @@ function check(player) {
 
 /**
  * Check if the command is written in the default form.
- * @param {string} message
+ * @param { string } message
  * @returns `true` if the command is written in the default form, otherwise `false`.
  */
 
@@ -107,7 +117,7 @@ function checkCommandSyntax(message) {
 };
 
 /**
- * @param {string} message
+ * @param { string } message
  * @returns Command properties.
  */
 
@@ -118,15 +128,21 @@ function getCommandBySyntax(message) {
 
 /**
  * Once the command object is passed in, its function will be executed.
- * @param {object} command
- * @param {PlayerObject} player
+ * @param { object } command
+ * @param { PlayerObject } player
  */
 
 function run(command, player = { id: 0 }) {
   switch (command.id) {
     case 1:
-      const formatter = new Intl.ListFormat('en', { style: 'short', type: 'conjunction' });
-      room.sendAnnouncement("Commands: " + formatter.format(commands.public.map((c) => commands.char + c.name), player.id));
+      const formatter = new Intl.ListFormat("en", { style: "short", type: "conjunction" });
+      room.sendAnnouncement("Commands: " + formatter.format(commands.public.map((c) => commands.char + c.name)), player.id, mainColor);
+    break;
+    case 2:
+      room.kickPlayer(player.id, "Good Bye!");
+    break;
+    case 3:
+      room.setPlayerAdmin(player.id, false);
     break;
   }
 };
