@@ -10,6 +10,10 @@ let RECAPTCHA_MODE = false;
  * Enable and disable blacklist mode.
  */
 let BLACKLIST_MODE = true;
+/**
+ * Enable and disable Automatic clearbans mode.
+ */
+let CLEARBANS_MODE = true;
 
 let mainColor = 0xFF9800;
 let wrongColor = 0xE53935;
@@ -72,7 +76,7 @@ room.setRequireRecaptcha(RECAPTCHA_MODE);
 room.onPlayerJoin = function (player) {
   check({ id: player.id, conn: player.conn });
   room.sendAnnouncement("Welcome " + player.name + ", Check " + commands.char + "help to show public commands", player.id, tipColor);
-  room.sendAnnouncement("Banlist is emptied every 10 minutes, players who abuse permissions will be blacklisted 📌\nbecause there are no moderators in the room at the moment, so be careful!", player.id, 0x757575, "small");
+  if (CLEARBANS_MODE) room.sendAnnouncement("Banlist is emptied every 10 minutes, players who abuse permissions will be blacklisted 📌\nbecause there are no moderators in the room at the moment, so be careful!", player.id, 0x757575, "small");
 };
 
 room.onPlayerLeave = function (player) {
