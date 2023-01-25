@@ -18,9 +18,8 @@ let CLEARBANS_MODE = true;
 let mainColor = 0xFF9800;
 let wrongColor = 0xE53935;
 let tipColor = 0xFF7043;
-let dColor = 0xA1887F;
 
-let token = "thr1.AAAAAGPQU8a1kggh_SZRJw.kWb6Q-s8NLQ";
+let token = "thr1.AAAAAGPRYu-7oqtQrKDXrQ.Q6Umft0FNLM";
 let roomName = "NAME";
 let public = false;
 let noPlayer = true;
@@ -75,9 +74,13 @@ room.setRequireRecaptcha(RECAPTCHA_MODE);
 
 room.onPlayerJoin = function (player) {
   check({ id: player.id, conn: player.conn });
+  CLEARBANS_MODE && room.sendAnnouncement("Banlist is emptied every 10 minutes, players who abuse permissions will be blacklisted 📌\nbecause there are no moderators in the room at the moment, so be careful!", player.id, 0x757575, "small");
   room.sendAnnouncement("Welcome " + player.name + ", Check " + commands.char + "help to show public commands", player.id, tipColor);
-  if (CLEARBANS_MODE) room.sendAnnouncement("Banlist is emptied every 10 minutes, players who abuse permissions will be blacklisted 📌\nbecause there are no moderators in the room at the moment, so be careful!", player.id, 0x757575, "small");
 };
+
+setTimeout(() => {
+  CLEARBANS_MODE && room.clearBans();
+}, 60000 * 10);
 
 room.onPlayerLeave = function (player) {
   delete connections[player.id];
@@ -89,7 +92,7 @@ room.onPlayerChat = function (player, message) {
     let command = getCommandBySyntax(message);
     if (!command) return false;
     if (command.admin && !player.admin) {
-      room.sendAnnouncement("You are not admin", player.id, wrongColor);
+      room.sendAnnouncement("You are not admin", player.id, wrongColor, null, 2);
       return false;
     }
     run(command, player);
@@ -166,7 +169,8 @@ function run(command, player = { id: 0 }) {
       room.setPlayerAdmin(player.id, false);
     break;
     case 4:
-      room.sendAnnouncement("Banlist has been cleared by @" + player.name, null, dColor);
+      room.clearBans();
+      room.sendAnnouncement("Banlist has been cleared by @" + player.name, null, mainColor);
     break;
   }
 };
