@@ -138,7 +138,7 @@ function checkCommandSyntax(message) {
 
 function getCommandBySyntax(message) {
   var message = message.slice(1);
-  return [...commands.public, ...commands.private].find(c => message.match(c.syntax)?.[0] == message);
+  return [...commands.public].find(c => message.match(c.syntax)?.[0] == message);
 };
 
 /**
