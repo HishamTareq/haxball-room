@@ -96,7 +96,7 @@ room.onPlayerChat = function (player, message) {
       room.sendAnnouncement("You are not admin", player.id, wrongColor, null, 2);
       return false;
     }
-    run(command, player, message);
+    run(command, player);
     return command.display;
   }
 }
@@ -152,17 +152,12 @@ function getCommandBySyntax(message) {
 };
 
 /**
- * Check if the player is AFK.
- * @param { number } playerID
- */
-
-/**
  * Once the command object is passed in, its function will be executed.
  * @param { object } command
  * @param { PlayerObject } player
  */
 
-function run(command, player, message) {
+function run(command, player) {
   switch (command.id) {
     case 1:
       const formatter = new Intl.ListFormat("en", { style: "short", type: "conjunction" });
