@@ -1,17 +1,17 @@
 /**
- * Enable and disable connection mode.
+ * Enable or disable connection mode.
  */
-let CONNECTION_MODE = true;
+let CONNECTION_MODE = false;
 /**
- * Enable and disable Recaptcha mode.
+ * Enable or disable Recaptcha mode.
  */
 let RECAPTCHA_MODE = false;
 /**
- * Enable and disable blacklist mode.
+ * Enable or disable blacklist mode.
  */
 let BLACKLIST_MODE = true;
 /**
- * Enable and disable Automatic clearbans mode.
+ * Enable or disable Automatic clearbans mode.
  */
 let CLEARBANS_MODE = true;
 
@@ -19,11 +19,11 @@ let mainColor = 0xFF9800;
 let wrongColor = 0xE53935;
 let tipColor = 0xFF7043;
 
-let token = "thr1.AAAAAGPRYu-7oqtQrKDXrQ.Q6Umft0FNLM";
-let roomName = "NAME";
-let public = false;
+let token = "thr1.AAAAAGPRh2_qpgn7YLiOxQ.ZZjIDNrX3iE";
+let roomName = "a's room";
+let public = true;
 let noPlayer = true;
-let maxPlayers = 12;
+let maxPlayers = 5;
 /**
  * An object that contains the current players `id` as a `key` and its `value` is `conn`.
  */
@@ -68,6 +68,7 @@ const room = HBInit({
   noPlayer: noPlayer,
   public: public,
   token: token,
+  password: "111",
 });
 
 room.setRequireRecaptcha(RECAPTCHA_MODE);
@@ -95,7 +96,7 @@ room.onPlayerChat = function (player, message) {
       room.sendAnnouncement("You are not admin", player.id, wrongColor, null, 2);
       return false;
     }
-    run(command, player);
+    run(command, player, message);
     return command.display;
   }
 }
@@ -151,12 +152,17 @@ function getCommandBySyntax(message) {
 };
 
 /**
+ * Check if the player is AFK.
+ * @param { number } playerID
+ */
+
+/**
  * Once the command object is passed in, its function will be executed.
  * @param { object } command
  * @param { PlayerObject } player
  */
 
-function run(command, player = { id: 0 }) {
+function run(command, player, message) {
   switch (command.id) {
     case 1:
       const formatter = new Intl.ListFormat("en", { style: "short", type: "conjunction" });
