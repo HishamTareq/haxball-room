@@ -1,15 +1,15 @@
 let CONNECTION_MODE = true;
-let RECAPTCHA_MODE = false;
+let RECAPTCHA_MODE = true;
 let BLACKLIST_MODE = true;
 let CLEARBANS_MODE = true;
 
-let mainColor = 0x43A047;
+let mainColor = 0x4CAF50;
 let secondaryColor = 0x8bc34a;
 let warningColor = 0xc62828;
 let tipColor = 0x9e9e9e;
 let pmColor = 0xda00ff;
 
-let token = "thr1.AAAAAGPSnrXuvkRh1ywfJQ.xrXhSptT1W0";
+let token = "thr1.AAAAAGPSvGpVxQtj6ylRaA.f97gHDUoLyM";
 let roomName = "room name";
 let public = false;
 let noPlayer = true;
@@ -135,6 +135,7 @@ function checkCommandSyntax(message) {
 
 function getCommandBySyntax(message) {
   var message = message.slice(1);
+  // 
   return [...commands.public].find(c => message.match(c.syntax)?.[0] == message);
 };
 
@@ -160,8 +161,8 @@ function run(command, player, message) {
       const consignee = room.getPlayer(message.match(/[0-9]+/)[0]);
       const MESSAGE = message.split(new RegExp(commands.char + command.name + " #\\d+ ")).reduce((c , p) => c + p).trim();
       if (!consignee || consignee.id == player.id) return;
-      room.sendAnnouncement("To " + consignee.name + ": " + MESSAGE, player.id, pmColor, null, 1);
-      room.sendAnnouncement("From " + player.name + ": " + MESSAGE, consignee.id, pmColor, null, 2);
+      room.sendAnnouncement("[PM] You" /*+ consignee.name*/ + ": "+ MESSAGE, player.id, pmColor, null, 1);
+      room.sendAnnouncement("[PM] " + player.name + ": " + MESSAGE, consignee.id, pmColor, null, 2);
       break;
   }
 };
