@@ -7,8 +7,9 @@ let mainColor = 0x43A047;
 let secondaryColor = 0x8bc34a;
 let warningColor = 0xc62828;
 let tipColor = 0x9e9e9e;
+let pmColor = 0xda00ff;
 
-let token = "thr1.AAAAAGPRpOIj_py6ZQaRuw.3IaKyN8Jid8";
+let token = "thr1.AAAAAGPSnrXuvkRh1ywfJQ.xrXhSptT1W0";
 let roomName = "room name";
 let public = false;
 let noPlayer = true;
@@ -40,10 +41,10 @@ const commands = {
       display: false,
     },
     {
-      name: "clearbans",
+      name: "pm",
       id: 4,
-      syntax: /(clearbans)/i,
-      admin: true,
+      syntax: /(pm #\d+ .+)/i,
+      admin: false,
       display: false,
     },
   ],
@@ -84,10 +85,6 @@ room.onPlayerChat = function (player, message) {
     }
     run(command, player, message);
     return command.display;
-  }
-  if (isMutedPlayer(player.id)) {
-    room.sendAnnouncement("You are muted", player.id, warningColor, null, 2);
-    return false;
   }
 }
 
@@ -160,8 +157,11 @@ function run(command, player, message) {
       room.setPlayerAdmin(player.id, false);
       break;
     case 4:
-      room.clearBans();
-      room.sendAnnouncement("Banlist has been cleared by @" + player.name, null, mainColor);
+      const consignee = room.getPlayer(message.match(/[0-9]+/)[0]);
+      const MESSAGE = message.split(new RegExp(commands.char + command.name + " #\\d+ ")).reduce((c , p) => c + p).trim();
+      if (!consignee || consignee.id == player.id) return;
+      room.sendAnnouncement("To " + consignee.name + ": " + MESSAGE, player.id, pmColor, null, 1);
+      room.sendAnnouncement("From " + player.name + ": " + MESSAGE, consignee.id, pmColor, null, 2);
       break;
   }
 };
