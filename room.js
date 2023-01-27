@@ -1,15 +1,15 @@
-let CONNECTION_MODE = true;
-let RECAPTCHA_MODE = true;
+let CONNECTION_MODE = false;
+let RECAPTCHA_MODE = false;
 let BLACKLIST_MODE = true;
 let CLEARBANS_MODE = true;
 
 let mainColor = 0x4CAF50;
-let secondaryColor = 0x8bc34a;
+let secondaryColor = 0xC0CA33;
 let warningColor = 0xc62828;
-let tipColor = 0x9e9e9e;
+let tipColor = 0x8bc34a;
 let pmColor = 0xda00ff;
 
-let token = "thr1.AAAAAGPSvGpVxQtj6ylRaA.f97gHDUoLyM";
+let token = "thr1.AAAAAGPT_sYCq88MC79abw.572peACNkcE";
 let roomName = "room name";
 let public = false;
 let noPlayer = true;
@@ -43,9 +43,16 @@ const commands = {
     {
       name: "pm",
       id: 4,
-      syntax: /(pm #\d+ .+)/i,
+      syntax: /pm #\d+ .+/i,
       admin: false,
       display: false,
+    },
+    {
+      name: "clearbans",
+      id: 5,
+      syntax: /clearbans/i,
+      admin: true,
+      display: true,
     },
   ],
 }
@@ -80,7 +87,7 @@ room.onPlayerChat = function (player, message) {
     let command = getCommandBySyntax(message);
     if (!command) return false;
     if (command.admin && !player.admin) {
-      room.sendAnnouncement("You are not admin", player.id, warningColor, null, 2);
+      room.sendAnnouncement("You are not an admin", player.id, warningColor, null, 2);
       return false;
     }
     run(command, player, message);
@@ -135,7 +142,6 @@ function checkCommandSyntax(message) {
 
 function getCommandBySyntax(message) {
   var message = message.slice(1);
-  // 
   return [...commands.public].find(c => message.match(c.syntax)?.[0] == message);
 };
 
@@ -143,6 +149,7 @@ function getCommandBySyntax(message) {
  * Once the command object is passed in, its function will be executed.
  * @param { object } command
  * @param { PlayerObject } player
+ * @param { string } message
  */
 
 function run(command, player, message) {
@@ -152,7 +159,7 @@ function run(command, player, message) {
       room.sendAnnouncement("Commands: " + formatter.format(commands.public.map((c) => commands.char + c.name)), player.id, mainColor);
       break;
     case 2:
-      room.kickPlayer(player.id, "Good Bye!");
+      room.kickPlayer(player.id, "Goodbye!");
       break;
     case 3:
       room.setPlayerAdmin(player.id, false);
@@ -161,8 +168,12 @@ function run(command, player, message) {
       const consignee = room.getPlayer(message.match(/[0-9]+/)[0]);
       const MESSAGE = message.split(new RegExp(commands.char + command.name + " #\\d+ ")).reduce((c , p) => c + p).trim();
       if (!consignee || consignee.id == player.id) return;
-      room.sendAnnouncement("[PM] You" /*+ consignee.name*/ + ": "+ MESSAGE, player.id, pmColor, null, 1);
+      room.sendAnnouncement("[PM] You" + ": " + MESSAGE, player.id, pmColor, null, 1);
       room.sendAnnouncement("[PM] " + player.name + ": " + MESSAGE, consignee.id, pmColor, null, 2);
+      break;
+    case 5:
+      room.clearBans();
+      room.sendAnnouncement("The Banlist has been cleared", null, secondaryColor);
       break;
   }
 };
