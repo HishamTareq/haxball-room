@@ -9,13 +9,16 @@ let warningColor = 0xc62828;
 let tipColor = 0x8bc34a;
 let pmColor = 0xda00ff;
 
-let token = "thr1.AAAAAGPT_sYCq88MC79abw.572peACNkcE";
-let roomName = "room name";
-let public = false;
-let noPlayer = true;
-let maxPlayers = 5;
+const config = {
+  token: "thr1.AAAAAGPVgwSP-g6JOWblCA.1JHiRducg7A",
+  roomName: "room name",
+  public: false,
+  noPlayer: true,
+  maxPlayers: 5,
+};
 
 const connections = {};
+const AFKS = [];
 
 const commands = {
   public: [
@@ -54,16 +57,17 @@ const commands = {
       admin: true,
       display: true,
     },
+    {
+      name: "afk",
+      id: 6,
+      syntax: /afk/i,
+      admin: false,
+      display: false,
+    },
   ],
 }
 
-const room = HBInit({
-  maxPlayers: maxPlayers,
-  roomName: roomName,
-  noPlayer: noPlayer,
-  public: public,
-  token: token,
-});
+const room = HBInit(config);
 
 room.setRequireRecaptcha(RECAPTCHA_MODE);
 
@@ -79,6 +83,7 @@ setTimeout(() => {
 
 room.onPlayerLeave = function (player) {
   delete connections[player.id];
+  removeFromAFK(player.id);
 };
 
 room.onPlayerChat = function (player, message) {
@@ -145,6 +150,18 @@ function getCommandBySyntax(message) {
   return [...commands.public].find(c => message.match(c.syntax)?.[0] == message);
 };
 
+function isPlayerAFK(playerID) {
+  return Boolean(AFKS.find(p => p.id == playerID));
+};
+
+function removeFromAFK(playerID) {
+  AFKS.forEach((p, index, array) => {
+    if (p.id == playerID) {
+      array.splice(index, 1);
+    }
+  });
+};
+
 /**
  * Once the command object is passed in, its function will be executed.
  * @param { object } command
@@ -157,23 +174,34 @@ function run(command, player, message) {
     case 1:
       const formatter = new Intl.ListFormat("en", { style: "short", type: "conjunction" });
       room.sendAnnouncement("Commands: " + formatter.format(commands.public.map((c) => commands.char + c.name)), player.id, mainColor);
-      break;
+    break;
     case 2:
       room.kickPlayer(player.id, "Goodbye!");
-      break;
+    break;
     case 3:
       room.setPlayerAdmin(player.id, false);
-      break;
+    break;
     case 4:
       const consignee = room.getPlayer(message.match(/[0-9]+/)[0]);
       const MESSAGE = message.split(new RegExp(commands.char + command.name + " #\\d+ ")).reduce((c , p) => c + p).trim();
       if (!consignee || consignee.id == player.id) return;
-      room.sendAnnouncement("[PM] You" + ": " + MESSAGE, player.id, pmColor, null, 1);
-      room.sendAnnouncement("[PM] " + player.name + ": " + MESSAGE, consignee.id, pmColor, null, 2);
-      break;
+      room.sendAnnouncement("To " + consignee.name + ": " +  MESSAGE, player.id, pmColor, null, 1);
+      room.sendAnnouncement("From " + player.name + ": " + MESSAGE, consignee.id, pmColor, null, 2);
+    break;
     case 5:
       room.clearBans();
       room.sendAnnouncement("The Banlist has been cleared", null, secondaryColor);
-      break;
+    break;
+    case 6:
+      if (isPlayerAFK(player.id)) {
+        removeFromAFK(player.id);
+      } else {
+        AFKS.push({ name: player.name, id: player.id });
+        room.setPlayerAdmin(player.id, false);
+        room.setPlayerTeam(player.id, 0);
+      }
+      room.sendAnnouncement(player.name + " is " + (isPlayerAFK(player.id) ? "now" : "back from") +" AFK", null, 0xffd700);
+    break;
   }
 };
+
