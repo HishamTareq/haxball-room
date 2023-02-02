@@ -1,7 +1,7 @@
 {
   "token": "thr1.AAAAAGPcHj42SYHYmoHc-w.lqRJiaypdZo",
   "public": false,
-  "maxPlayers": 5,
+  "maxPlayers": 16,
   "noPlayer": true,
   "roomName": "string"
 }
