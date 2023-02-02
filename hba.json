@@ -1,0 +1,51 @@
+{
+  "public": [
+    {
+      "id": 1,
+      "name": "help",
+      "syntax": "help|commands"
+    },
+    {
+      "id": 2,
+      "name": "bb",
+      "syntax": "bb"
+    },
+    {
+      "id": 3,
+      "name": "pm",
+      "syntax": "pm #\\d+ .+"
+    },
+    {
+      "id": 4,
+      "name": "waive",
+      "syntax": "waive"
+    },
+    {
+      "id": 5,
+      "name": "clearbans",
+      "syntax": "clearbans"
+    },
+    {
+      "id": 6,
+      "name": "afk",
+      "syntax": "afk"
+    },
+    {
+      "id": 7,
+      "name": "afks",
+      "syntax": "afks"
+    },
+    {
+      "id": 8,
+      "name": "settings",
+      "syntax": "settings"
+    }
+  ],
+  "private": [
+    {
+      "id": 20,
+      "name": "mute",
+      "syntax": "mute #\\d+( (m|h|y))?"
+    }
+  ]
+}
