@@ -48,16 +48,16 @@ HaxballJS.then((HBInit) => {
         lastT.name = players[i].name;
         lastT.team = players[i].team;
         lastT.id = players[i].id;
-        if (TOUCHES[players[i].team == 1 ? 2 : 1].assist.id !== undefined) {
-          TOUCHES[players[i].team == 1 ? 2 : 1].assist.name = undefined;
-          TOUCHES[players[i].team == 1 ? 2 : 1].assist.id = undefined;
+        if (!(TOUCHES[players[i].team].last.id == players[i].id)) {
+          TOUCHES[players[i].team].assist.name = TOUCHES[players[i].team].last.name;
+          TOUCHES[players[i].team].assist.id = TOUCHES[players[i].team].last.id;
         }
+        TOUCHES[players[i].team == 1 ? 2 : 1].assist.name = undefined;
+        TOUCHES[players[i].team == 1 ? 2 : 1].assist.id = undefined;
+        TOUCHES[players[i].team == 1 ? 2 : 1].last.name = undefined;
+        TOUCHES[players[i].team == 1 ? 2 : 1].last.id = undefined;
         TOUCHES[players[i].team].last.name = players[i].name;
         TOUCHES[players[i].team].last.id = players[i].id;
-        if (TOUCHES[players[i].team].assist.id === undefined) {
-          TOUCHES[players[i].team].assist.name = players[i].name;
-          TOUCHES[players[i].team].assist.id = players[i].id;
-        }
       }
     }
   }
@@ -66,16 +66,25 @@ HaxballJS.then((HBInit) => {
     lastT.name = player.name;
     lastT.team = player.team;
     lastT.id = player.id;
+    if (!TOUCHES[player.team].last.id == player.id) {
+      TOUCHES[player.team].assist.name = TOUCHES[player.team].last.name;
+      TOUCHES[player.team].assist.id = TOUCHES[player.team].last.id;
+    };
     TOUCHES[player.team].last.name = player.name;
     TOUCHES[player.team].last.id = player.id;
-    if (TOUCHES[player.team].assist.id !== undefined) return;
-    TOUCHES[player.team].assist.name = player.name;
-    TOUCHES[player.team].assist.id = player.id;
+    TOUCHES[player.team == 1 ? 2 : 1].assist.name = undefined;
+    TOUCHES[player.team == 1 ? 2 : 1].assist.id = undefined;
+    TOUCHES[player.team == 1 ? 2 : 1].last.name = undefined;
+    TOUCHES[player.team == 1 ? 2 : 1].last.id = undefined;
   }
   ;
   room.onPositionsReset = function () {
     TOUCHES[1].last.name = undefined;
     TOUCHES[1].last.id = undefined;
+    TOUCHES[1].assist.name = undefined;
+    TOUCHES[1].assist.id = undefined;
+    TOUCHES[2].last.name = undefined;
+    TOUCHES[2].last.id = undefined;
     TOUCHES[2].assist.name = undefined;
     TOUCHES[2].assist.id = undefined;
     lastT.name = undefined;
@@ -84,15 +93,15 @@ HaxballJS.then((HBInit) => {
   }
   ;
   room.onTeamGoal = function (team) {
-    var time = room.getScores().time;
+    var color = team == 1 ? 0xff2626 : 0x00adff;
+    var a = room.getScores();
     if (team != lastT.team) {
-      room.sendAnnouncement('🥅 Own goal! ' + lastT.name + " for " + (team == 1 ? 'RED' : 'BLUE') + " team [" + floor(time) + ']', null, team == 1 ? 0xe56e56 : 0x5689e5);
+      room.sendAnnouncement('Own goal! ' + floor(a.time) + " " + lastT.name + " for " + (team == 1 ? 'RED' : 'BLUE') + " team" + ` [${a.red} - ${a.blue}]`, null, color);
     } else {
-      if (TOUCHES[team].assist.id === TOUCHES[team].last.id) {
-        room.sendAnnouncement(`🥅 Goal! ${ TOUCHES[team].last.name } scored for his ${(team == 1 ? 'RED' : 'BLUE')} team ${floor(time)}`, null, 0xff8c00)
+      if (TOUCHES[team].assist.id === TOUCHES[team].last.id || TOUCHES[team].assist.id === undefined) {
+        room.sendAnnouncement(`Goal! ${floor(a.time)} ${ TOUCHES[team].last.name } scored for his ${(team == 1 ? 'RED' : 'BLUE')} team [${a.red} - ${a.blue}]`, null, color)
       } else {
-        room.sendAnnouncement(`🥅 Goal! ${ TOUCHES[team].last.name } scored a goal for his ${(team == 1 ? 'RED' : 'BLUE')} team, Assist ${TOUCHES[team].assist.name} ${floor(time)}`, null, 0xff8c00);
-        room.sendAnnouncement(`Assist ${TOUCHES[team].assist.name} ${floor(time)}`, null, 0xff8c00, 'small');
+        room.sendAnnouncement(`Goal! ${floor(a.time)} ${ TOUCHES[team].last.name } scored a goal for his ${(team == 1 ? 'RED' : 'BLUE')} team, Assist ${TOUCHES[team].assist.name} [${a.red} - ${a.blue}]`, null, color);
       }
     }
   }
@@ -100,6 +109,10 @@ HaxballJS.then((HBInit) => {
   room.onGameStart = function () {
     TOUCHES[1].last.name = undefined;
     TOUCHES[1].last.id = undefined;
+    TOUCHES[1].assist.name = undefined;
+    TOUCHES[1].assist.id = undefined;
+    TOUCHES[2].last.name = undefined;
+    TOUCHES[2].last.id = undefined;
     TOUCHES[2].assist.name = undefined;
     TOUCHES[2].assist.id = undefined;
     lastT.name = undefined;
