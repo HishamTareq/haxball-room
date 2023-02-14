@@ -1,4 +1,4 @@
-// const MAP = window.localStorage.getItem("_map");
+const MAP = window.localStorage.getItem("map");
 
 let CONNECTION_MODE = true;
 let RECAPTCHA_MODE = false;
@@ -17,7 +17,7 @@ const config = {
   public: true,
   noPlayer: true,
   maxPlayers: 9,
-  geo:{"lat":31.2162,"lon":29.9529,"code":"eg"}
+  geo:{"lat":81.2162,"lon":29.9529,"code":"eg"}
 };
 
 const connections = {};
@@ -35,7 +35,7 @@ const commands = {
     {
       name: "bb",
       id: 2,
-      syntax: /(bb|leave)/i,
+      syntax: /(bb|leave|ggs)/i,
       admin: false,
       display: false,
     },
@@ -116,9 +116,7 @@ room.onPlayerChat = function (player, message) {
 };
 
 room.onPlayerTeamChange = function (c) {
-  if (isPlayerAFK(c.id)) {
-    room.setPlayerTeam(c.id, 0);
-  }
+  updateAdmins();
 };
 
 room.onPlayerAdminChange = function (c) {
@@ -209,14 +207,14 @@ function run(command, player, message) {
       room.sendAnnouncement("Commands: " + formatter.format(commands.public.map((c) => commands.char + c.name)), player.id, mainColor);
     break;
     case 2:
-      room.kickPlayer(player.id, "Goodbye!");
+      room.kickPlayer(player.id, message);
     break;
     case 3:
       room.setPlayerAdmin(player.id, false);
     break;
     case 4:
       const consignee = room.getPlayer(message.match(/[0-9]+/)[0]);
-      const MESSAGE = message.split(new RegExp(commands.char + command.name + " #\\d+ ")).reduce((c, p) => c + p).trim();
+      const MESSAGE = message.split(new RegExp(commands.char + command.name + " #\\d+ ", 'i')).reduce((c, p) => c + p).trim();
       if (!consignee || consignee.id == player.id) return;
       room.sendAnnouncement("To " + consignee.name + ": " + MESSAGE, player.id, pmColor, null, 1);
       room.sendAnnouncement("From " + player.name + ": " + MESSAGE, consignee.id, pmColor, null, 2);
@@ -236,7 +234,6 @@ function run(command, player, message) {
         removeFromAFK(player.id);
       } else {
         AFKS.push({ name: player.name, id: player.id, return: new Date() });
-        room.setPlayerAdmin(player.id, false);
         room.setPlayerTeam(player.id, 0);
       }
       room.sendAnnouncement(player.name + " " + (isPlayerAFK(player.id) ? "is now AFK" : "has returned"), null, 0xff9800);
