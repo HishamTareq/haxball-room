@@ -10,7 +10,7 @@ const roomConfig = {
   noPlayer: true,
   public: true,
   maxPlayers: 13,
-  roomName: 'DEMO - 🪐 SPACEBOUNCE 🪐 @ONN',
+  roomName: 'DEMO - 🪐 SPACEBOUNCE 🪐',
   token: 'thr1.AAAAAGPrXOObq_Bf_ThBWg.iJULNb3ronI',
   geo: {
     "lat": 144.2162,
