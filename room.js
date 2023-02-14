@@ -145,7 +145,7 @@ const execute = function (message, player) {
   switch (command.id) {
     case 'SLeAJY':
       const formatter = new Intl.ListFormat('en', { style: 'short', type: 'conjunction' });
-      room.sendAnnouncement(formatter.format(commands.map(c => PREFIX + c.name)), player.id, 0x66cdaa);
+      // room.sendAnnouncement(formatter.format(commands.map(c => PREFIX + c.name)), player.id, 0x66cdaa);
       break;
     case 'zoPLOY':
       room.kickPlayer(player.id, message);
@@ -156,7 +156,7 @@ const execute = function (message, player) {
           room.setPlayerAdmin(player.id, false);
         }
       break;
-    case '0NQlg9':
+    case '0NQ lg9':
       if (getPlayerAFK(player)) {
         const { time } = AFKS.find(p => p.id == player.id);
         const currentTime = new Date().getTime();
@@ -198,7 +198,7 @@ room.setCustomStadium(MAP);
 
 room.onPlayerJoin = function (player) {
   room.sendAnnouncement("In this demo room, banlist is emptied every 10 minutes, players who abuse permissions will be blacklisted 📌\nbecause there are no moderators in the room at the moment, so be careful!", player.id, 0xff1b84, "small");
-  room.sendAnnouncement("Welcome " + player.name + ", Check " + PREFIX + "help to show public commands", player.id, 0x9c27b0);
+  // room.sendAnnouncement("Welcome " + player.name + ", Check " + PREFIX + "help to show public commands", player.id, 0x9c27b0);
   updateAdmins();
 };
 
