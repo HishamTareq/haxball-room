@@ -1,242 +1,271 @@
-const MAP = window.localStorage.getItem("map");
+const MAP = this.localStorage.getItem('map');
 
-let CONNECTION_MODE = true;
-let RECAPTCHA_MODE = false;
-let BLACKLIST_MODE = true;
-let CLEARBANS_MODE = true;
+const PREFIX = '!';
 
-let mainColor = 0x4CAF50;
-let secondaryColor = 0xC0CA33;
-let warningColor = 0xc62828;
-let tipColor = 0x8bc34a;
-let pmColor = 0xda00ff;
-
-const config = {
-  token: "thr1.AAAAAGPXMIVjygCSmTAgQw.mWfU7FH29is",
-  roomName: "⚙️ demo",
-  public: true,
-  noPlayer: true,
-  maxPlayers: 9,
-  geo:{"lat":81.2162,"lon":29.9529,"code":"eg"}
-};
-
-const connections = {};
 const AFKS = [];
 
-const commands = {
-  public: [
-    {
-      name: "help",
-      id: 1,
-      syntax: /(help|commands)/i,
-      admin: false,
-      display: false,
-    },
-    {
-      name: "bb",
-      id: 2,
-      syntax: /(bb|leave|ggs)/i,
-      admin: false,
-      display: false,
-    },
-    {
-      name: "waive",
-      id: 3,
-      syntax: /(waive|resign)/i,
-      admin: false,
-      display: false,
-    },
-    {
-      name: "pm",
-      id: 4,
-      syntax: /pm #\d+ .+/i,
-      admin: false,
-      display: false,
-    },
-    {
-      name: "clearbans",
-      id: 5,
-      syntax: /clearbans/i,
-      admin: true,
-      display: true,
-    },
-    {
-      name: "afk",
-      id: 6,
-      syntax: /afk/i,
-      admin: false,
-      display: false,
-    },
+const BANS = [];
+
+const roomConfig = {
+  noPlayer: true,
+  public: true,
+  maxPlayers: 13,
+  roomName: 'DEMO - 🪐 SPACEBOUNCE 🪐',
+  token: 'thr1.AAAAAGPrXOObq_Bf_ThBWg.iJULNb3ronI',
+  geo: {
+    "lat": 55.2162,
+    "lon": 55.9529,
+    "code": "eg"
+  }
+};
+
+const commands = [
+  {
+    name: 'help',
+    syntax: /(help|commands)/i,
+    id: 'SLeAJY',
+    admin: false,
+    display: false,
+  }, {
+    name: 'bb',
+    syntax: /(bb|leave|ggs)/i,
+    id: 'zoPLOY',
+    admin: false,
+    display: false,
+  }, {
+    name: 'waive',
+    syntax: /(waive|resign)/i,
+    id: 'VQHXD0',
+    admin: false,
+    display: false,
+  }, {
+    name: 'afk',
+    syntax: /afk/i,
+    id: '0NQlg9',
+    admin: false,
+    display: false,
+  }, {
+    name: 'clearbans',
+    syntax: /clearbans/i,
+    id: 'SSEUhP',
+    admin: true,
+    display: true,
+  }
+];
+
+const ball = {
+  discIndex: 0,
+  lastTouch: {
+    name: null,
+    id: null,
+    team: null,
+  },
+  lastPass: {
+    name: null,
+    id: null,
+  },
+  dispose: function () {
+    this.lastPass.name = this.lastPass.id = this.lastTouch.name = this.lastTouch.id = this.lastTouch.team = null;
+  },
+};
+
+const distance = function (p, b) {
+  return Math.sqrt(((p.x - b.x)** 2) + ((p.y - b.y)** 2));
+};
+
+const onPlayerTouchBall = function (player) {
+  if ( player.id != ball.lastTouch.id ) {
+    if ( player.team == ball.lastTouch.team ) {
+      ball.lastPass.name = ball.lastTouch.name;
+      ball.lastPass.id = ball.lastTouch.id;
+    } else {
+      ball.lastPass.name = ball.lastPass.id = null;
+    }
+    ball.lastTouch.name = player.name;
+    ball.lastTouch.id = player.id;
+    ball.lastTouch.team = player.team;
+  }
+};
+
+const isOwnGoal = function (team) {
+  return ball.lastTouch.team != team;
+};
+
+const goalMessages = {
+  "Normal goal": [
+    "The [[team]] team scores a goal with [[playerName]]'s feet!",
   ],
-}
-
-function updateAdmins() { 
-  // Get all players
-  var players = room.getPlayerList();
-  if ( players.length == 0 ) return; // No players left, do nothing.
-  if ( players.find((player) => player.admin) != null ) return; // There's an admin left so do nothing.
-  room.setPlayerAdmin(players[0].id, true); // Give admin to the first non admin player in the list
-}
-
-const room = HBInit(config);
-
-room.setRequireRecaptcha(RECAPTCHA_MODE);
-room.setTeamsLock(true)
-room.setCustomStadium(MAP);
-
-room.onPlayerJoin = function (player) {
-  check({ id: player.id, conn: player.conn });
-  CLEARBANS_MODE && room.sendAnnouncement("In this demo room, banlist is emptied every 10 minutes, players who abuse permissions will be blacklisted 📌\nbecause there are no moderators in the room at the moment, so be careful!", player.id, 0x757575, "small");
-  room.sendAnnouncement("Welcome " + player.name + ", Check " + commands.char + "help to show public commands", player.id, tipColor);
-  updateAdmins();
+  "Own goal": [
+    "Oh, an Own goal from [[playerName]] for the opposing team!"
+  ],
 };
 
-setTimeout(() => {
-  CLEARBANS_MODE && room.clearBans();
-}, 60000 * 10);
-
-room.onPlayerLeave = function (player) {
-  delete connections[player.id];
-  removeFromAFK(player.id);
-  updateAdmins();
+const teams = {
+  "1": 'RED',
+  "2": 'BLUE',
 };
 
-room.onPlayerChat = function (player, message) {
-  var message = message.trim();
-  if (checkCommandSyntax(message)) {
-    let command = getCommandBySyntax(message);
-    if (!command) return false;
-    if (command.admin && !player.admin) {
-      room.sendAnnouncement("You are not an admin", player.id, warningColor, null, 2);
-      return false;
-    }
-    run(command, player, message);
-    return command.display;
-  }
+const room = HBInit(roomConfig);
+
+const getPlayerAFK = function (player) {
+  return AFKS.find(p => p.id == player.id) != null;
 };
 
-room.onPlayerTeamChange = function (c) {
-  updateAdmins();
-};
-
-room.onPlayerAdminChange = function (c) {
-  if (isPlayerAFK(c.id)) {
-    room.setPlayerAdmin(c.id, false);
-  }
-};
-
-room.onStadiumChange = function (newStadiumName) {
-  if (newStadiumName !== "Spacebounce Official Map") {
-    room.setCustomStadium(MAP);
-  }
-};
-
-Object.defineProperty(connections, 'swap', {
-  value: function () {
-    var a = {};
-    for (let key in this) {
-      a[this[key]] = key;
-    }
-    return a;
-  }
-});
-
-Object.defineProperty(commands, 'char', {
-  value: "!",
-  writable: true,
-});
-
-/**
- * Check if the player is blacklisted or try to join again from the same network,
- * will be kicked if one of the above two conditions is met.
- * @param { PlayerObject } player
- */
-
-function check(player) {
-  var { [player.conn]: conn } = connections.swap();
-  var blacklist = [];
-  if (BLACKLIST_MODE && blacklist.find(p => p.conn == player.conn)) return room.kickPlayer(player.id, 'BLACKLISTED');
-  if (CONNECTION_MODE && conn) return room.kickPlayer(player.id, 'It is not allowed to join more than one player from the same network');
-  connections[player.id] = player.conn;
-};
-
-/**
- * Check if the command is written in the default form.
- * @param { string } message
- * @returns `true` if the command is written in the default form, otherwise `false`.
- */
-
-function checkCommandSyntax(message) {
-  var char = commands.char;
-  return message.startsWith(char) && message.length > char.length;
-};
-
-/**
- * @param { string } message
- * @returns Command properties.
- */
-
-function getCommandBySyntax(message) {
-  var message = message.slice(1);
-  return [...commands.public].find(c => message.match(c.syntax)?.[0] == message);
-};
-
-function isPlayerAFK(playerID) {
-  return Boolean(AFKS.find(p => p.id == playerID));
-};
-
-function removeFromAFK(playerID) {
+const removePlayerFromAFK = function(player) {
   AFKS.forEach((p, index, array) => {
-    if (p.id == playerID) {
+    if (p.id == player.id) {
       array.splice(index, 1);
     }
   });
 };
 
-/**
- * Once the command object is passed in, its function will be executed.
- * @param { object } command
- * @param { PlayerObject } player
- * @param { string } message
- */
+const getCommandProperties = function (message) {
+  var message = message.slice(1);
+  return commands.find(c => message.match(c.syntax)?.[0] == message);
+};
 
-function run(command, player, message) {
+const updateAdmins = function() {
+  var players = room.getPlayerList();
+  if ( players.length == 0 ) return;
+  if ( players.find((player) => player.admin) != null ) return;
+  room.setPlayerAdmin(players[0].id, true);
+};
+
+setTimeout(() => {
+  room.clearBans();
+}, 60000 * 10);
+
+const execute = function (message, player) {
+  var command = getCommandProperties(message);
+  if (!command) return false;
+  if ((command.admin && !player.admin) && command.id != 'SSEUhP') {
+    room.sendAnnouncement('You are not an admin', player.id, 0xcd5c5c, undefined, 0);
+    return false;
+  }
   switch (command.id) {
-    case 1:
-      const formatter = new Intl.ListFormat("en", { style: "short", type: "conjunction" });
-      room.sendAnnouncement("Commands: " + formatter.format(commands.public.map((c) => commands.char + c.name)), player.id, mainColor);
-    break;
-    case 2:
+    case 'SLeAJY':
+      const formatter = new Intl.ListFormat('en', { style: 'short', type: 'conjunction' });
+      room.sendAnnouncement(formatter.format(commands.map(c => PREFIX + c.name)), player.id, 0x66cdaa);
+      break;
+    case 'zoPLOY':
       room.kickPlayer(player.id, message);
-    break;
-    case 3:
-      room.setPlayerAdmin(player.id, false);
-    break;
-    case 4:
-      const consignee = room.getPlayer(message.match(/[0-9]+/)[0]);
-      const MESSAGE = message.split(new RegExp(commands.char + command.name + " #\\d+ ", 'i')).reduce((c, p) => c + p).trim();
-      if (!consignee || consignee.id == player.id) return;
-      room.sendAnnouncement("To " + consignee.name + ": " + MESSAGE, player.id, pmColor, null, 1);
-      room.sendAnnouncement("From " + player.name + ": " + MESSAGE, consignee.id, pmColor, null, 2);
-    break;
-    case 5:
-      room.clearBans();
-      room.sendAnnouncement("The Banlist has been cleared", null, secondaryColor);
-    break;
-    case 6:
-      if (isPlayerAFK(player.id)) {
-        const playerStartAFKTime = AFKS.find(p => p.id === player.id).return;
-        const currentTime = new Date();
-        if (!(((currentTime.getTime() - playerStartAFKTime.getTime()) / 1000) > 15)) {
-          room.sendAnnouncement("You can return after " + (15 - Math.trunc((currentTime.getTime() - playerStartAFKTime.getTime()) / 1000)) +" seconds", player.id, warningColor, null, 0);
-          return;
+      break;
+    case 'VQHXD0':
+        const players = room.getPlayerList();
+        if (players.filter(p => p.admin).length >= 2) {
+          room.setPlayerAdmin(player.id, false);
         }
-        removeFromAFK(player.id);
+      break;
+    case '0NQlg9':
+      if (getPlayerAFK(player)) {
+        const { time } = AFKS.find(p => p.id == player.id);
+        const currentTime = new Date().getTime();
+        const a = (currentTime - time) / 1000;
+        if (!(a > 15)) {
+          room.sendAnnouncement('You must wait ' + (15 - Math.trunc(a)) + ' seconds to return', player.id, 0xcd5c5c, undefined, 0);
+          return false;
+        }
+        removePlayerFromAFK(player);
       } else {
-        AFKS.push({ name: player.name, id: player.id, return: new Date() });
+        AFKS.push({
+          id: player.id,
+          time: new Date().getTime(),
+        });
         room.setPlayerTeam(player.id, 0);
       }
-      room.sendAnnouncement(player.name + " " + (isPlayerAFK(player.id) ? "is now AFK" : "has returned"), null, 0xff9800);
-    break;
+      room.sendAnnouncement(player.name + ' ' + (getPlayerAFK(player) ? 'is now AFK' : 'has returned'), undefined, 0x9e9e9e);
+      break;
+    case 'SSEUhP':
+      if (!player.admin) {
+        room.sendAnnouncement('You are not an admin', player.id, 0xcd5c5c, undefined, 0);
+        return false;
+      }
+      if (BANS.length >= 1) {
+        room.clearBans();
+        room.sendAnnouncement('Banlist has been cleared', undefined, 0x00ff00);
+        BANS.length = 0;
+      } else {
+        return false;
+      }
+      break
   }
+  return command.display;
+};
+
+room.setTeamsLock(true);
+
+room.setCustomStadium(MAP);
+
+room.onPlayerJoin = function (player) {
+  room.sendAnnouncement("In this demo room, banlist is emptied every 10 minutes, players who abuse permissions will be blacklisted 📌\nbecause there are no moderators in the room at the moment, so be careful!", player.id, 0xff1b84, "small");
+  room.sendAnnouncement("Welcome " + player.name + ", Check " + PREFIX + "help to show public commands", player.id, 0x9c27b0);
+  updateAdmins();
+};
+
+room.onPlayerLeave = function (player) {
+  if (room.getPlayerList().length < 1) {
+    room.stopGame();
+  }
+  removePlayerFromAFK(player);
+  updateAdmins();
+}
+
+room.onGameTick = function () {
+  room.getPlayerList().filter((e) => e.team).forEach((player) => {
+    const b = room.getDiscProperties(ball.discIndex);
+    const { x, y, radius } = room.getPlayerDiscProperties(player.id);
+    if (distance({ x: x, y: y }, b) <= (radius + b.radius) + 2) {
+      onPlayerTouchBall(player);
+    }
+  });
+};
+
+room.onTeamGoal = function (team) {
+  const a = isOwnGoal(team);
+  room.sendAnnouncement((a ? goalMessages["Own goal"] : goalMessages["Normal goal"]).random().replace("[[team]]", teams[team]).replace("[[playerName]]", ball.lastTouch.name) + (a ? "" : (ball.lastPass.id ? ", Assist " + ball.lastPass.name : "")), null, team == 1 ? 0xf44336 : 0x5689e5);
+};
+
+room.onGameStop = function (byPlayer) {
+  ball.dispose();
+};
+
+room.onPositionsReset = function () {
+  ball.dispose();
+};
+
+room.onPlayerBallKick = function (player) {
+  onPlayerTouchBall(player);
+};
+
+room.onPlayerChat = function (player, message) {
+  var message = message.trim();
+  if (message.startsWith(PREFIX)) {
+    return execute(message, player);
+  }
+};
+
+room.onPlayerKicked = function (kickPlayer, reason, ban, byPlayer) {
+  if (ban) {
+    BANS.push(kickPlayer.id);
+  }
+};
+
+room.onPlayerAdminChange = function (changedPlayer, byPlayer) {
+  updateAdmins();
+}
+
+room.onPlayerTeamChange = function (changedPlayer, byPlayer) {
+  if (getPlayerAFK(changedPlayer)) {
+    room.setPlayerTeam(changedPlayer.id, 0);
+  }
+};
+
+room.onStadiumChange = function (newStadiumName, byPlayer) {
+  if (newStadiumName != JSON.parse(MAP).name) {
+    room.setCustomStadium(MAP);
+  }
+};
+
+Array.prototype.random = function () {
+  return this[Math.floor((Math.random() * this.length))];
 };
