@@ -1,168 +1,400 @@
-const MAP = this.localStorage.getItem('map');
-
-const PREFIX = '!';
-
-const AFKS = [];
+const MAP = window.localStorage.getItem('map');
 
 const BANS = [];
 
+const AFKS = [];
+
+const ORDER = [];
+
+const PREFIX = '!';
+
 const roomConfig = {
+  roomName: 'MiniHSC SPACEBOUNCE v1.0 🌕 🦅',
+  token: 'thr1.AAAAAGPwmns1h0xuiTfOzQ.nueJuhHgQ_w',
   noPlayer: true,
   public: true,
-  maxPlayers: 13,
-  roomName: 'DEMO - 🪐 SPACEBOUNCE 🪐',
-  token: 'thr1.AAAAAGPrXOObq_Bf_ThBWg.iJULNb3ronI',
-  geo: {
-    "lat": 144.2162,
-    "lon": 105.9529,
-    "code": "eg"
-  }
+  maxPlayers: 10,
+};
+
+const ball = {
+  DISC_INDEX: 0,
+  touch: {
+    name: null,
+    id: null,
+    team: null,
+  },
+  assist: {
+    name: null,
+    id: null,
+    team: null,
+  },
+  setTouch: function(a) {
+    this.touch.name = a.name;
+    this.touch.team = a.team;
+    this.touch.id = a.id;
+  },
+  setAssist: function (a) {
+    this.assist.name = a.name;
+    this.assist.id = a.id;
+    this.assist.team = a.team;
+  },
+  dispose: function () {
+    this.touch.name = this.touch.id = this.touch.team = this.assist.name = this.assist.id = null;
+  },
+};
+
+const goalMessages = {
+  'default': [
+    '[[playerName]] has scored a goal for the [[team]] team',
+  ],
+  'og': [
+    'Oh, an Own goal from [[playerName]] for the opposing team'
+  ],
+};
+
+const teams = {
+  '1': 'Red',
+  '2': 'Blue',
 };
 
 const commands = [
   {
     name: 'help',
     syntax: /(help|commands)/i,
-    id: 'SLeAJY',
+    id: 1,
     admin: false,
     display: false,
+    staff: false,
   }, {
     name: 'bb',
-    syntax: /(bb|leave|ggs)/i,
-    id: 'zoPLOY',
+    syntax: /(bb|ggs|leave)/i,
+    id: 2,
     admin: false,
     display: false,
+    staff: false,
   }, {
-    name: 'waive',
-    syntax: /(waive|resign)/i,
-    id: 'VQHXD0',
+    name: 'bans',
+    id: 3000000000000000000000000000000n,
+    syntax: /bans/i,
     admin: false,
     display: false,
+    staff: false,
   }, {
-    name: 'afk',
-    syntax: /afk/i,
-    id: '0NQlg9',
-    admin: false,
-    display: false,
+    name: 'unban',
+    syntax: /unban #\d+/i,
+    id: 4000000000000000000000000000000n,
+    admin: true,
+    display: true,
+    staff: false,
   }, {
     name: 'clearbans',
     syntax: /clearbans/i,
-    id: 'SSEUhP',
+    id: 5,
     admin: true,
     display: true,
-  }
+    staff: false,
+  }, {
+    name: 'waive',
+    syntax: /(waive|resign)/i,
+    id: 6,
+    admin: false,
+    display: true,
+    staff: false,
+  }, {
+    name: 're',
+    syntax: /re/i,
+    id: 7,
+    admin: true,
+    display: true,
+    staff: false,
+  }, {
+    name: 'afk',
+    syntax: /afk/i,
+    id: 8,
+    admin: false,
+    display: false,
+    staff: false,
+  }, {
+    name: 'afks',
+    syntax: /afks/i,
+    id: 9,
+    admin: false,
+    display: false,
+    staff: false,
+  }, {
+    name: 'pm',
+    syntax: /pm #\d+ .+/i,
+    id: 10,
+    admin: false,
+    display: false,
+    staff: false,
+  }, {
+    name: 't',
+    syntax: /t .+/i,
+    id: 11,
+    admin: false,
+    display: false,
+    staff: false,
+  }, {
+    name: 'settings',
+    id: 12,
+    admin: false,
+    display: false,
+    syntax: /settings .+/i,
+    staff: false,
+  }, {
+    name: 'rand',
+    id: 13,
+    syntax: /(rand|random)/i,
+    admin: false,
+    display: true,
+    staff: false,
+  }, {
+    name: 'top',
+    id: 14,
+    syntax: /top/i,
+    admin: false,
+    display: true,
+    staff: false,
+  }, {
+    name: 'bottom',
+    id: 15,
+    syntax: /bottom/i,
+    admin: false,
+    display: true,
+    staff: false,
+  }, {
+    name: 'kickafks',
+    id: 16,
+    syntax: /kickafks/i,
+    admin: true,
+    display: true,
+    staff: false,
+  }, {
+    name: 'mute',
+    id: 17,
+    syntax: /mute #\d+ \d+(s|m|h|y)/i,
+    admin: false,
+    display: true,
+    staff: true,
+  }, {
+    name: 'unmute',
+    id: 18,
+    syntax: /unmute #\d+/i,
+    admin: false,
+    display: true,
+    staff: true,
+  }, {
+    name: 'block',
+    id: 19,
+    syntax: /block #\d+/i,
+    admin: false,
+    display: true,
+    staff: true,
+  }, {
+    name: 'move',
+    id: 20,
+    syntax: /move #\d+ \d+/i,
+    admin: false,
+    display: true,
+    staff: true,
+  }, {
+    name: 'admin',
+    id: 21,
+    syntax: /admin/i,
+    admin: false,
+    display: true,
+    staff: true,
+  }, {
+    name: 'removeadmin',
+    id: 22,
+    syntax: /removeadmin #\d+/i,
+    admin: false,
+    display: true,
+    staff: true,
+  },
 ];
-
-const ball = {
-  discIndex: 0,
-  lastTouch: {
-    name: null,
-    id: null,
-    team: null,
-  },
-  lastPass: {
-    name: null,
-    id: null,
-  },
-  dispose: function () {
-    this.lastPass.name = this.lastPass.id = this.lastTouch.name = this.lastTouch.id = this.lastTouch.team = null;
-  },
-};
-
-const distance = function (p, b) {
-  return Math.sqrt(((p.x - b.x)** 2) + ((p.y - b.y)** 2));
-};
-
-const onPlayerTouchBall = function (player) {
-  if ( player.id != ball.lastTouch.id ) {
-    if ( player.team == ball.lastTouch.team ) {
-      ball.lastPass.name = ball.lastTouch.name;
-      ball.lastPass.id = ball.lastTouch.id;
-    } else {
-      ball.lastPass.name = ball.lastPass.id = null;
-    }
-    ball.lastTouch.name = player.name;
-    ball.lastTouch.id = player.id;
-    ball.lastTouch.team = player.team;
-  }
-};
-
-const isOwnGoal = function (team) {
-  return ball.lastTouch.team != team;
-};
-
-const goalMessages = {
-  "Normal goal": [
-    "The [[team]] team scores a goal with [[playerName]]'s feet!",
-  ],
-  "Own goal": [
-    "Oh, an Own goal from [[playerName]] for the opposing team!"
-  ],
-};
-
-const teams = {
-  "1": 'RED',
-  "2": 'BLUE',
-};
 
 const room = HBInit(roomConfig);
 
-const getPlayerAFK = function (player) {
-  return AFKS.find(p => p.id == player.id) != null;
+room.setTeamsLock(true);
+
+room.setCustomStadium(MAP);
+
+room.setTeamColors(1, 0, 0xFFFFFF, [0xFF3636]);
+
+room.setTeamColors(2, 0, 0xFFFFFF, [0x006FFF]);
+
+room.onPlayerJoin = function (player) {
+  room.setPlayerAdmin(player.id, true);
+  room.sendAnnouncement("Welcome " + player.name + ", Check " + PREFIX + "help to show public commands", player.id, 0xff2828);
+  updateAdmins();
+}
+
+room.onPlayerKicked = function (kickPlayer, reason, ban, byPlayer) {
+  if (ban) {
+    BANS.push({
+      name: kickPlayer.name,
+      id: kickPlayer.id,
+    });
+  }
 };
 
-const removePlayerFromAFK = function(player) {
-  AFKS.forEach((p, index, array) => {
-    if (p.id == player.id) {
-      array.splice(index, 1);
+room.onPlayerTeamChange = function (changedPlayer, byPlayer) {
+  if (getPlayerAFK(changedPlayer)) {
+    room.setPlayerTeam(changedPlayer.id, 0);
+    room.reorderPlayers(ORDER, true);
+  } else {
+    const spectators = room.getPlayerList().filter(p => p.team == 0);
+    ORDER.length = 0;
+    for (let i = 0; i < spectators.length; i++) {
+      ORDER.push(spectators[i].id);
     }
-  });
+  }
 };
 
-const getCommandProperties = function (message) {
-  var message = message.slice(1);
-  return commands.find(c => message.match(c.syntax)?.[0] == message);
+room.onPlayerLeave = function (player) {
+  removePlayerFromAFK(player);
+  const spectators = room.getPlayerList().filter(p => p.team == 0);
+  ORDER.length = 0;
+  for (let i = 0; i < spectators.length; i++) {
+    ORDER.push(spectators[i].id);
+  }
+  updateAdmins();
 };
 
-const updateAdmins = function() {
-  var players = room.getPlayerList();
-  if ( players.length == 0 ) return;
-  if ( players.find((player) => player.admin) != null ) return;
-  room.setPlayerAdmin(players[0].id, true);
+room.onPlayerChat = function (player, message) {
+  var message = message.trim();
+  if (message.startsWith(PREFIX)) {
+    return run(message, player);
+  }
 };
 
-setTimeout(() => {
-  room.clearBans();
-}, 60000 * 10);
+room.onStadiumChange = function (newStadiumName) {
+  if (newStadiumName != JSON.parse(MAP).name) {
+    room.setCustomStadium(MAP);
+  }
+};
 
-const execute = function (message, player) {
-  var command = getCommandProperties(message);
-  if (!command) return false;
-  if ((command.admin && !player.admin) && command.id != 'SSEUhP') {
-    room.sendAnnouncement('You are not an admin', player.id, 0xcd5c5c, undefined, 0);
+room.onPlayerAdminChange = function (changedPlayer, byPlayer) {
+  updateAdmins();
+};
+
+room.onPlayerBallKick = function (player) {
+  updateBallProperties(player);
+};
+
+room.onPositionsReset = function () {
+  ball.dispose();
+};
+
+room.onGameStop = function () {
+  ball.dispose();
+};
+
+room.onGameTick = function () {
+  const a = room.getDiscProperties(ball.DISC_INDEX);
+  const players = room.getPlayerList().filter(p => p.team != 0);
+  for (let i = 0; i < players.length; i++) {
+    const { radius } = room.getPlayerDiscProperties(players[i].id);
+    if (distance(players[i], a) <= (radius + a.radius) + 2) {
+      updateBallProperties(players[i]);
+    }
+  }
+};
+
+room.onTeamGoal = function (team) {
+  const icon = team == 1 ? '🔴' : '🔵';
+  const scores = room.getScores();
+  const a = isOwnGoal(team);
+  room.sendAnnouncement(icon + ' ' + (a ? goalMessages['og'] : goalMessages['default']).random().replace('[[team]]', teams[team]).replace('[[playerName]]', ball.touch.name) + (a ? '' : (ball.assist.id ? ' with ' + ball.assist.name + '\'s assist' : '')) + ' [' + scores.red + ' - ' + scores.blue + ']' + ' ' + icon, undefined, team == 1 ? 0xff3e3e : 0x2196f3);
+};
+
+function distance(player, ball) {
+  return Math.sqrt(((player.position.x - ball.x)** 2) + ((player.position.y - ball.y)** 2));
+};
+
+function updateBallProperties(player) {
+  if (player.id != ball.touch.id) {
+    if (player.team == ball.touch.team) {
+      ball.setAssist(ball.touch);
+    } else {
+      ball.setAssist({
+        id: null,
+        name: null,
+        team: null,
+      });
+    }
+    ball.setTouch(player);
+  }
+};
+
+function isOwnGoal(team) {
+  return ball.touch.team != team;
+};
+
+function run(message, player) {
+  const formatter = new Intl.ListFormat('en', { style: 'short', type: 'conjunction' });
+  var cmd = getCommand(message);
+  if (!cmd) return false;
+  if (cmd.admin && !player.admin) {
+    room.sendAnnouncement('You are not admin', player.id, 0xff3838, 'small', 0);
     return false;
   }
-  switch (command.id) {
-    case 'SLeAJY':
-      const formatter = new Intl.ListFormat('en', { style: 'short', type: 'conjunction' });
-      // room.sendAnnouncement(formatter.format(commands.map(c => PREFIX + c.name)), player.id, 0x66cdaa);
-      break;
-    case 'zoPLOY':
+  switch (cmd.id) {
+    case 1:
+      room.sendAnnouncement('For everyone: ' + formatter.format(commands.filter(c => !c.admin && !c.staff).map(c => PREFIX + c.name)), player.id, 0xffa500, 'small');
+      room.sendAnnouncement('For admins: ' + formatter.format(commands.filter(c => c.admin).map(c => PREFIX + c.name)), player.id, 0xffa500, 'small');
+    break;
+    case 2:
       room.kickPlayer(player.id, message);
-      break;
-    case 'VQHXD0':
-        const players = room.getPlayerList();
-        if (players.filter(p => p.admin).length >= 2) {
-          room.setPlayerAdmin(player.id, false);
-        }
-      break;
-    case '0NQ lg9':
+    break;
+    case 3:
+      if (BANS.length > 0) {
+        room.sendAnnouncement('Bans: ' + formatter.format(BANS.map(p => p.name + '#' + p.id)), player.id, undefined, undefined, 0);
+      }
+    break;
+    case 4:
+      const id = message.match(/\d+/)?.[0];
+      if (id != null) {
+        BANS.forEach((p, index, array) => {
+          if (p.id == id) {
+            room.clearBan(id);
+            room.sendAnnouncement(player.name + " unbanned " + p.name, undefined, 0x7fff00);
+            array.splice(index, 1);
+          }
+        });
+      } else {
+        return false;
+      }
+    break;
+    case 5:
+      if (BANS.length > 0) {
+        room.clearBans();
+        room.sendAnnouncement("Banlist has been cleared", undefined, 0x7fff00);
+        BANS.length = 0;
+      } else {
+        return false;
+      }
+    break;
+    case 6:
+      room.setPlayerAdmin(player.id, false);
+    break;
+    case 7:
+      if (player.team != 0) {
+        room.stopGame();
+        room.startGame();
+      } else {
+        return false;
+      }
+    break;
+    case 8:
       if (getPlayerAFK(player)) {
         const { time } = AFKS.find(p => p.id == player.id);
         const currentTime = new Date().getTime();
         const a = (currentTime - time) / 1000;
         if (!(a > 15)) {
-          room.sendAnnouncement('You must wait ' + (15 - Math.trunc(a)) + ' seconds to return', player.id, 0xcd5c5c, undefined, 0);
+          room.sendAnnouncement('You must wait ' + (15 - Math.trunc(a)) + ' seconds to return', player.id, 0xff3838, 'small', 0);
           return false;
         }
         removePlayerFromAFK(player);
@@ -172,100 +404,54 @@ const execute = function (message, player) {
           time: new Date().getTime(),
         });
         room.setPlayerTeam(player.id, 0);
+        // room.setPlayerAdmin(player.id, false);
+        const spectators = room.getPlayerList().filter(p => p.team == 0);
+        ORDER.length = 0;
+        for (let i = 0; i < spectators.length; i++) {
+          ORDER.push(spectators[i].id);
+        }
       }
-      room.sendAnnouncement(player.name + ' ' + (getPlayerAFK(player) ? 'is now AFK' : 'has returned'), undefined, 0x9e9e9e);
-      break;
-    case 'SSEUhP':
-      if (!player.admin) {
-        room.sendAnnouncement('You are not an admin', player.id, 0xcd5c5c, undefined, 0);
-        return false;
+      room.sendAnnouncement(player.name + ' ' + (getPlayerAFK(player) ? 'is now AFK' : 'has returned'), undefined, 0xff3838);
+    break;
+    case 11:
+      let color = 0xe56e56;
+      if (player.team == 2) {
+        color = 0x56aae5;
+      } else if (player.team == 0) {
+        color = 0xededed;
       }
-      if (BANS.length >= 1) {
-        room.clearBans();
-        room.sendAnnouncement('Banlist has been cleared', undefined, 0x00ff00);
-        BANS.length = 0;
-      } else {
-        return false;
-      }
-      break
+      room.getPlayerList().filter(p => p.team == player.team).forEach((p) => {
+        room.sendAnnouncement('[Team] ' + player.name + ': ' + message.slice(2).trim(), p.id, color);
+      });
+    break;
   }
-  return command.display;
+  return cmd.display;
 };
 
-room.setTeamsLock(true);
-
-room.setCustomStadium(MAP);
-
-room.onPlayerJoin = function (player) {
-  room.sendAnnouncement("In this demo room, banlist is emptied every 10 minutes, players who abuse permissions will be blacklisted 📌\nbecause there are no moderators in the room at the moment, so be careful!", player.id, 0xff1b84, "small");
-  // room.sendAnnouncement("Welcome " + player.name + ", Check " + PREFIX + "help to show public commands", player.id, 0x9c27b0);
-  updateAdmins();
+function getCommand(message) {
+  var message = message.slice(1);
+  return commands.find(c => message.match(c.syntax)?.[0] == message);
 };
 
-room.onPlayerLeave = function (player) {
-  if (room.getPlayerList().length < 1) {
-    room.stopGame();
-  }
-  removePlayerFromAFK(player);
-  updateAdmins();
-}
+function getPlayerAFK(player) {
+  return AFKS.find(p => p.id == player.id) != null;
+};
 
-room.onGameTick = function () {
-  room.getPlayerList().filter((e) => e.team).forEach((player) => {
-    const b = room.getDiscProperties(ball.discIndex);
-    const { x, y, radius } = room.getPlayerDiscProperties(player.id);
-    if (distance({ x: x, y: y }, b) <= (radius + b.radius) + 2) {
-      onPlayerTouchBall(player);
+function removePlayerFromAFK(player) {
+  AFKS.forEach((p, index, array) => {
+    if (p.id == player.id) {
+      array.splice(index, 1);
     }
   });
 };
 
-room.onTeamGoal = function (team) {
-  const a = isOwnGoal(team);
-  room.sendAnnouncement((a ? goalMessages["Own goal"] : goalMessages["Normal goal"]).random().replace("[[team]]", teams[team]).replace("[[playerName]]", ball.lastTouch.name) + (a ? "" : (ball.lastPass.id ? ", Assist " + ball.lastPass.name : "")), null, team == 1 ? 0xf44336 : 0x5689e5);
-};
-
-room.onGameStop = function (byPlayer) {
-  ball.dispose();
-};
-
-room.onPositionsReset = function () {
-  ball.dispose();
-};
-
-room.onPlayerBallKick = function (player) {
-  onPlayerTouchBall(player);
-};
-
-room.onPlayerChat = function (player, message) {
-  var message = message.trim();
-  if (message.startsWith(PREFIX)) {
-    return execute(message, player);
-  }
-};
-
-room.onPlayerKicked = function (kickPlayer, reason, ban, byPlayer) {
-  if (ban) {
-    BANS.push(kickPlayer.id);
-  }
-};
-
-room.onPlayerAdminChange = function (changedPlayer, byPlayer) {
-  updateAdmins();
-}
-
-room.onPlayerTeamChange = function (changedPlayer, byPlayer) {
-  if (getPlayerAFK(changedPlayer)) {
-    room.setPlayerTeam(changedPlayer.id, 0);
-  }
-};
-
-room.onStadiumChange = function (newStadiumName, byPlayer) {
-  if (newStadiumName != JSON.parse(MAP).name) {
-    room.setCustomStadium(MAP);
-  }
-};
-
 Array.prototype.random = function () {
   return this[Math.floor((Math.random() * this.length))];
+};
+
+const updateAdmins = function() {
+  var players = room.getPlayerList();
+  if ( players.length == 0 ) return;
+  if ( players.find((player) => player.admin) != null ) return;
+  room.setPlayerAdmin(players[0].id, true);
 };
