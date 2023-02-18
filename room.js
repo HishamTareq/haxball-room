@@ -72,21 +72,21 @@ const commands = [
     admin: false,
     display: false,
     staff: false,
-  }, {
+  }/*, {
     name: 'bans',
     id: 3000000000000000000000000000000n,
     syntax: /bans/i,
     admin: false,
     display: false,
     staff: false,
-  }, {
+  }*//*, {
     name: 'unban',
     syntax: /unban #\d+/i,
     id: 4000000000000000000000000000000n,
     admin: true,
     display: true,
     staff: false,
-  }, {
+  }*/, {
     name: 'clearbans',
     syntax: /clearbans/i,
     id: 5,
@@ -135,42 +135,42 @@ const commands = [
     admin: false,
     display: false,
     staff: false,
-  }, {
+  }/*, {
     name: 'settings',
     id: 12,
     admin: false,
     display: false,
     syntax: /settings .+/i,
     staff: false,
-  }, {
+  }*//*, {
     name: 'rand',
     id: 13,
     syntax: /(rand|random)/i,
     admin: false,
     display: true,
     staff: false,
-  }, {
+  }*//*, {
     name: 'top',
     id: 14,
     syntax: /top/i,
     admin: false,
     display: true,
     staff: false,
-  }, {
+  }*//*, {
     name: 'bottom',
     id: 15,
     syntax: /bottom/i,
     admin: false,
     display: true,
     staff: false,
-  }, {
+  }*//*, {
     name: 'kickafks',
     id: 16,
     syntax: /kickafks/i,
     admin: true,
     display: true,
     staff: false,
-  }, {
+  }*/, {
     name: 'mute',
     id: 17,
     syntax: /mute #\d+ \d+(s|m|h|y)/i,
