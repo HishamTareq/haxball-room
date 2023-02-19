@@ -277,7 +277,7 @@ room.onStadiumChange = function (newStadiumName) {
 };
 
 room.onPlayerAdminChange = function (changedPlayer, byPlayer) {
-  updateAdmins();
+  // updateAdmins();
 };
 
 room.onPlayerBallKick = function (player) {
